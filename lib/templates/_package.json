@@ -1,0 +1,4 @@
+{
+  "name": "<%= _.slugify(name) %>",
+  "browser": "main.js"
+}
