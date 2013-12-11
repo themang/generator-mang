@@ -1,6 +1,6 @@
 {
   "name": "generator-mang",
-  "version": "0.0.0",
+  "version": "0.0.1",
   "description": "A generator for Yeoman",
   "keywords": [
     "yeoman-generator"
@@ -8,14 +8,14 @@
   "homepage": "https://github.com/joshrtay/generator-mang",
   "bugs": "https://github.com/joshrtay/generator-mang/issues",
   "author": {
-    "name": "",
+    "name": "Josh Taylor",
     "email": "joshrtay@gmail.com",
     "url": "https://github.com/joshrtay"
   },
   "main": "app/index.js",
   "repository": {
     "type": "git",
-    "url": "git://github.com/joshrtay/generator-mang.git"
+    "url": "git://github.com/themanggenerator-mang.git"
   },
   "scripts": {
     "test": "mocha"

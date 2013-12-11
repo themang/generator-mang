@@ -9,32 +9,10 @@ var fs = require('fs');
 
 
 var MangGenerator = module.exports = function MangGenerator(args, options, config) {
-  yeoman.generators.Base.apply(this, arguments);
-
-  this.pkg = JSON.parse(this.readFileAsString(path.join(__dirname, '../package.json')));
+  yeoman.generators.NamedBase.apply(this, arguments);
 };
 
-util.inherits(MangGenerator, yeoman.generators.Base);
-
-MangGenerator.prototype.askFor = function askFor() {
-  var cb = this.async();
-
-  console.log("Welcome to the mang!");
-
-  var prompts = [{
-    name: 'mangName',
-    message: 'What do you want to call your mang?'
-  }];
-
-  console.log('Initializing the mang...');
-
-  this.prompt(prompts, function (props) {
-    this.name = props.mangName;
-
-    cb();
-  }.bind(this));
-
-};
+util.inherits(MangGenerator, yeoman.generators.NamedBase);
 
 MangGenerator.prototype.gitInit = function gitInit() {
   var cb = this.async();
