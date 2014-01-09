@@ -5,7 +5,10 @@ var yeoman = require('yeoman-generator');
 var spawn = require('child_process').spawn;
 var rimraf = require('rimraf');
 var _ = require('underscore');
+var git = require('gift');
 var fs = require('fs');
+
+require('colors');
 
 
 var MangGenerator = module.exports = function MangGenerator(args, options, config) {
@@ -14,31 +17,46 @@ var MangGenerator = module.exports = function MangGenerator(args, options, confi
 
 util.inherits(MangGenerator, yeoman.generators.NamedBase);
 
+MangGenerator.prototype.prompts = function prompts() {
+  var cb = this.async();
+  var prompts = [{
+    name: 'repo',
+    message: 'What is your git url (git@github.com/...)?'
+  }];
+  this.prompt(prompts, function (props) {
+    this.repo = props.repo;
+    cb();
+  }.bind(this));
+}
+
 MangGenerator.prototype.gitInit = function gitInit() {
   var cb = this.async();
   var name = this.name;
+  var repoUrl = this.repo;
 
-  var ps = spawn('git', ['clone','https://github.com/weo-edu/frontend-boilerplate', name], {stdio: 'inherit'});
-  ps.on('close', function(code) {
-    if (code !== 0) {
-      console.error('Failed to initialize - exited with ' + code);
-    } else {
-      process.chdir(name);
-      var psBranch = spawn('git', ['branch', 'seed'], {stdio: 'inherit'});
-      psBranch.on('close', function(code) {
-        if (code !== 0) {
-          console.error('Failed to branch - exited with ' + code);
-        } else {
-          cb();
-        }
+  console.log('cloning pup (this will take a sec)...'.green);
+  git.clone('https://github.com/themang/pup', name, function(err, repo) {
+    if (err) throw err;
+    repo.create_branch('seed', function(err) {
+      if (err) throw err;
+      repo.remote_remove('origin', function(err) {
+        if (err) throw err;
+        repo.remote_add('origin', repoUrl, function(err) {
+          if (err) throw err;
+          console.log('pushing seed branch for easy mang updates (this will take a sec)...'.green);
+          repo.remote_push('origin seed', function(err) {
+            if (err) throw err;
+            cb();
+          });
+        });
       })
-    }
+    });
   });
-
 };
 
 MangGenerator.prototype.renameConfigs = function renameConfigs() {
   var self = this;
+  console.log('changing name of package configs...'.green);
   _.each(['package.json', 'bower.json', 'component.json'], function(pkgType) {
     var body = self.read('_' + pkgType, 'utf8');
     body = self.engine(body, self);
