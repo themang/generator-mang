@@ -4,7 +4,10 @@ var yeoman = require('yeoman-generator');
 var Step = require('step');
 var spawn = require('child_process').spawn;
 var git = require('gift');
+var _ = require('underscore');
+var exec = require('child_process').exec;
 require('colors');
+
 
 var UpdateGenerator = module.exports = function UpdateGenerator(args, options, config) {
   // By calling `NamedBase` here, we get the argument to the subgenerator call
@@ -18,7 +21,6 @@ util.inherits(UpdateGenerator, yeoman.generators.Base);
 UpdateGenerator.prototype.gitUpdate = function gitUpdate() {
 	var cb = this.async();
 
-	console.log('git update');
 	var repo = git('./');
 
 	function checkoutSeed(cb) {
@@ -27,8 +29,7 @@ UpdateGenerator.prototype.gitUpdate = function gitUpdate() {
 			repo.branches(this);
 		}, function(err, branches) {
 			if (err) throw err;
-
-			if (branches.indexOf('seed') >= 0) {
+			if (_.findWhere(branches, {name: 'seed'})) {
 				repo.checkout('seed', this);
 			} else {
 				repo.checkout('-t origin/seed', this)
@@ -44,14 +45,14 @@ UpdateGenerator.prototype.gitUpdate = function gitUpdate() {
 		checkoutSeed(this);
 	}, function(err) {
 		if (err) throw err;
-		repo.git('pull', {}, ['https://github.com/themang/pup', 'master'], this);
+		exec('git pull https://github.com/themang/pup master', {maxBuffer: 10000 * 1024}, this);
 	}, function(err) {
 		if (err) throw err;
 		console.log('merging changes...'.green);
 		repo.checkout('master', this);
 	}, function(err) {
 		if (err) throw err;
-		repo.git('merge', {}, ['seed'], this);
+		exec('git merge seed', {maxBuffer: 10000 * 1024}, this);
 	}, function(err) {
 		if (err) throw err;
 		cb();
