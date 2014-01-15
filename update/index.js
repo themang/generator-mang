@@ -52,10 +52,10 @@ UpdateGenerator.prototype.gitUpdate = function gitUpdate() {
 		repo.checkout('master', this);
 	}, function(err) {
 		if (err) throw err;
-		exec('git merge seed', {maxBuffer: 10000 * 1024}, this);
-	}, function(err) {
-		if (err) throw err;
-		cb();
+		 var cp = require("child_process").spawn('git', ['merge', 'seed'], {
+			stdio: 'inherit'
+		});
+		cp.on('close', cb)
 	});
   
 };
