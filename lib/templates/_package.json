@@ -1,4 +1,5 @@
 {
   "name": "<%= _.slugify(name) %>",
-  "browser": "main.js"
+  "browser": "main.js"<% if (serverSide) { %><%= ',' %> 
+  <%= '"main": "index.js"' %><% } %>
 }
